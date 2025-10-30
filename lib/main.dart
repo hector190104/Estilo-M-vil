@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white, // Fondo general blanco
       ),
       // --- MODIFICACIÓN: Iniciar directamente en ConfirmationScreen ---
-      // initialRoute: '/home', // Comentado temporalmente
+      initialRoute: '/home', // Comentado temporalmente
       routes: {
         '/home': (context) => HomeScreen(), // Mantenemos las rutas originales
         '/register': (context) => RegisterScreen(),
@@ -44,26 +44,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-// --- CLASE HomeScreen de ejemplo si no la tienes ---
-// (Puedes descomentar esto si no tienes un HomeScreen real)
-class HomeScreen extends StatelessWidget {
-   @override
-   Widget build(BuildContext context) {
-     return Scaffold(
-       appBar: AppBar(title: Text('Home Screen')),
-       body: Center(
-         child: ElevatedButton(
-           onPressed: () {
-             // Aquí empezarías tu flujo normal, ej:
-             // Navigator.pushNamed(context, '/service_selection');
-             // O si no usas rutas nombradas:
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SeleccionServicioScreen()));
-           },
-           child: Text('Iniciar Reserva (Ir a Selección Servicio)'),
-         ),
-       ),
-     );
-   }
- }
-
