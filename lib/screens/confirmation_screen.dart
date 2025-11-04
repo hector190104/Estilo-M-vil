@@ -24,6 +24,7 @@ class ConfirmationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Esta es la estructura que te funcionó
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(context),
@@ -59,6 +60,7 @@ class ConfirmationScreen extends StatelessWidget {
       elevation: 0.3,
       leading: IconButton(
         icon: const Icon(Icons.close, color: AppColors.foregroundColor),
+        // Modificado para volver a la pantalla anterior (payment)
         onPressed: () => Navigator.of(context).pop(),
       ),
       title: const Text(
@@ -127,10 +129,14 @@ class ConfirmationScreen extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: const Center(
-            child: Icon(
-              Icons.content_cut,
-              color: Colors.white,
-              size: 40,
+            // --- Icono de Tijeras (Aproximación del SVG) ---
+            child: RotationTransition(
+              turns: AlwaysStoppedAnimation(-45 / 360),
+              child: Icon(
+                Icons.content_cut,
+                color: Colors.white,
+                size: 40,
+              ),
             ),
           ),
         ),
@@ -162,8 +168,16 @@ class ConfirmationScreen extends StatelessWidget {
     final String formattedPrice =
         NumberFormat.currency(locale: 'es_MX', symbol: '\$').format(price);
 
+    // Corregir el color con opacidad
+    final Color cardColor = Color.fromRGBO(
+      AppColors.gray100.red,
+      AppColors.gray100.green,
+      AppColors.gray100.blue,
+      0.5, // 50% opacidad
+    );
+
     return Card(
-      color: AppColors.gray100.withOpacity(0.5),
+      color: cardColor,
       elevation: 3,
       shadowColor: Colors.black12,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -287,14 +301,12 @@ class ConfirmationScreen extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 500),
           child: ElevatedButton(
+            // --- MODIFICACIÓN: Llamar al diálogo ---
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('¡Cita confirmada con éxito!'),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
+              // Ya no usamos SnackBar, llamamos a nuestra función de diálogo
+              _showConfirmationDialog(context);
             },
+            // --- FIN MODIFICACIÓN ---
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.progressActive,
               foregroundColor: Colors.white,
@@ -314,4 +326,241 @@ class ConfirmationScreen extends StatelessWidget {
       ),
     );
   }
-}
+
+  // --- WIDGET NUEVO: Diálogo de Confirmación ---
+  void _showConfirmationDialog(BuildContext context) {
+    // Formatear los datos para el diálogo
+    final String formattedDate =
+        DateFormat('EEEE, d \'de\' MMMM', 'es').format(selectedDate).capitalize();
+    final String formattedPrice =
+        NumberFormat.currency(locale: 'es_MX', symbol: '\$').format(price);
+
+    showDialog(
+      context: context,
+      // El fondo oscuro semitransparente (bg-gray-900/50)
+      barrierColor: Colors.black.withOpacity(0.5),
+      builder: (BuildContext dialogContext) {
+        // Usamos Dialog para la ventana emergente
+        return Dialog(
+          backgroundColor: Colors.white,
+          elevation: 8.0, // shadow-lg
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0), // rounded-xl
+          ),
+          // Quitar el padding por defecto del Dialog
+          insetPadding: const EdgeInsets.all(24), 
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 384), // max-w-sm
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // Para que se ajuste al contenido
+              children: [
+                // --- Contenido Principal del Diálogo ---
+                Padding(
+                  padding: const EdgeInsets.all(16.0), // p-4
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start, // items-start
+                    children: [
+                      // Icono
+                      Container(
+                        width: 48, // h-12 w-12
+                        height: 48,
+                        decoration: const BoxDecoration(
+                          color: AppColors.dialogIconBg, // bg-[#E0F2FE]
+                          shape: BoxShape.circle, // rounded-full
+                        ),
+                        child: const Icon(
+                          Icons.event_available,
+                          color: AppColors.progressStep, // text-[#457B9D]
+                          size: 28, // text-3xl (aprox)
+                        ),
+                      ),
+                      const SizedBox(width: 16), // ml-4
+                      // Contenido de texto
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Fila "Home Styles" y "ahora"
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                Text(
+                                  'Home Styles',
+                                  style: TextStyle(
+                                    fontSize: 14, // text-sm
+                                    fontWeight: FontWeight.w600, // font-semibold
+                                    color: AppColors.gray900,
+                                  ),
+                                ),
+                                Text(
+                                  'ahora',
+                                  style: TextStyle(
+                                    fontSize: 12, // text-xs
+                                    color: AppColors.gray500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4), // mt-1
+                            const Text(
+                              '¡Tu cita esta confirmada!',
+                              style: TextStyle(
+                                fontSize: 18, // text-lg
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.gray900,
+                              ),
+                            ),
+                            const SizedBox(height: 4), // mt-1
+                            // Párrafo con estilos mixtos
+                            Text.rich(
+                              TextSpan(
+                                text: 'Prepárate para tu ',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.gray600,
+                                  height: 1.5, // Interlineado
+                                ),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: serviceName, // Dato dinámico
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.progressActive,
+                                    ),
+                                  ),
+                                  const TextSpan(text: ' con '),
+                                  TextSpan(
+                                    text: employeeName, // Dato dinámico
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.progressActive,
+                                    ),
+                                  ),
+                                  const TextSpan(text: ' el '),
+                                  TextSpan(
+                                    text: formattedDate, // Dato dinámico
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.progressActive,
+                                    ),
+                                  ),
+                                  const TextSpan(text: ' a las '),
+                                  TextSpan(
+                                    text: selectedTime, // Dato dinámico
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.progressActive,
+                                    ),
+                                  ),
+                                  const TextSpan(text: '. Total estimado: '),
+                                  TextSpan(
+                                    text: formattedPrice, // Dato dinámico
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.progressActive,
+                                    ),
+                                  ),
+                                  const TextSpan(text: '.'),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 8), // mt-2
+                            const Text(
+                              '¡Nos vemos pronto!',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.gray500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Botón Cerrar (X)
+                      InkWell(
+                        onTap: () {
+                           // Cierra solo el diálogo
+                           Navigator.of(dialogContext).pop();
+                           // Y luego navega al inicio
+                           Navigator.of(context).popUntil((route) => route.isFirst);
+                        },
+                        customBorder: const CircleBorder(),
+                        child: const Padding(
+                          padding: EdgeInsets.all(4.0), // Un poco de padding táctil
+                          child: Icon(Icons.close, color: AppColors.gray400, size: 20),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // --- Botones Inferiores del Diálogo ---
+                Container(
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      top: BorderSide(color: AppColors.gray200, width: 1.0),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.progressStep, // text-[#457B9D]
+                            padding: const EdgeInsets.symmetric(vertical: 16), // py-3
+                            textStyle: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Manrope',
+                            ),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.zero,
+                            ),
+                          ),
+                          onPressed: () {
+                            // TODO: Navegar a "Mis Citas" o una pantalla de detalle
+                            Navigator.of(dialogContext).pop();
+                            Navigator.of(context).popUntil((route) => route.isFirst);
+                          },
+                          child: const Text('Ver detalles'),
+                        ),
+                      ),
+                      // Divisor vertical
+                      Container(
+                        width: 1,
+                        height: 48, // Altura aproximada del botón
+                        color: AppColors.gray200,
+                      ),
+                      Expanded(
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.progressActive, // text-[#E63946]
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            textStyle: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Manrope',
+                            ),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.zero,
+                            ),
+                          ),
+                          onPressed: () {
+                            // TODO: Implementar lógica de cancelación
+                            Navigator.of(dialogContext).pop();
+                            Navigator.of(context).popUntil((route) => route.isFirst);
+                          },
+                          child: const Text('Cancelar'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+} // Fin ConfirmationScreen
+
