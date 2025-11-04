@@ -348,7 +348,7 @@ class ConfirmationScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(12.0), // rounded-xl
           ),
           // Quitar el padding por defecto del Dialog
-          insetPadding: const EdgeInsets.all(24), 
+          insetPadding: const EdgeInsets.all(24),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 384), // max-w-sm
             child: Column(
@@ -478,22 +478,27 @@ class ConfirmationScreen extends StatelessWidget {
                       // Botón Cerrar (X)
                       InkWell(
                         onTap: () {
-                           // Cierra solo el diálogo
-                           Navigator.of(dialogContext).pop();
-                           // Y luego navega al inicio
-                           Navigator.of(context).popUntil((route) => route.isFirst);
+                          // Cierra solo el diálogo
+                          Navigator.of(dialogContext).pop();
+                          // Y luego navega al inicio
+                          Navigator.of(context)
+                              .popUntil((route) => route.isFirst);
+                          // NAVEGA A CATALOGO
+                          Navigator.of(context).pushNamed('/catalog');
                         },
                         customBorder: const CircleBorder(),
                         child: const Padding(
-                          padding: EdgeInsets.all(4.0), // Un poco de padding táctil
-                          child: Icon(Icons.close, color: AppColors.gray400, size: 20),
+                          padding:
+                              EdgeInsets.all(4.0), // Un poco de padding táctil
+                          child: Icon(Icons.close,
+                              color: AppColors.gray400, size: 20),
                         ),
                       ),
                     ],
                   ),
                 ),
 
-                // --- Botones Inferiores del Diálogo ---
+                // --- MODIFICACIÓN: Botones Inferiores del Diálogo ---
                 Container(
                   decoration: const BoxDecoration(
                     border: Border(
@@ -505,8 +510,10 @@ class ConfirmationScreen extends StatelessWidget {
                       Expanded(
                         child: TextButton(
                           style: TextButton.styleFrom(
-                            foregroundColor: AppColors.progressStep, // text-[#457B9D]
-                            padding: const EdgeInsets.symmetric(vertical: 16), // py-3
+                            foregroundColor:
+                                AppColors.progressStep, // Color azul
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 16), // py-3
                             textStyle: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -517,44 +524,21 @@ class ConfirmationScreen extends StatelessWidget {
                             ),
                           ),
                           onPressed: () {
-                            // TODO: Navegar a "Mis Citas" o una pantalla de detalle
+                            // 1. Cierra el diálogo
                             Navigator.of(dialogContext).pop();
-                            Navigator.of(context).popUntil((route) => route.isFirst);
+                            // 2. Vuelve a la pantalla principal (/home)
+                            Navigator.of(context)
+                                .popUntil((route) => route.isFirst);
+                            // 3. Navega a la pantalla de catálogo
+                            Navigator.of(context).pushNamed('/catalog');
                           },
-                          child: const Text('Ver detalles'),
-                        ),
-                      ),
-                      // Divisor vertical
-                      Container(
-                        width: 1,
-                        height: 48, // Altura aproximada del botón
-                        color: AppColors.gray200,
-                      ),
-                      Expanded(
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            foregroundColor: AppColors.progressActive, // text-[#E63946]
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            textStyle: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Manrope',
-                            ),
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.zero,
-                            ),
-                          ),
-                          onPressed: () {
-                            // TODO: Implementar lógica de cancelación
-                            Navigator.of(dialogContext).pop();
-                            Navigator.of(context).popUntil((route) => route.isFirst);
-                          },
-                          child: const Text('Cancelar'),
+                          child: const Text('Aceptar'), // Nuevo texto
                         ),
                       ),
                     ],
                   ),
                 ),
+                // --- FIN MODIFICACIÓN ---
               ],
             ),
           ),
