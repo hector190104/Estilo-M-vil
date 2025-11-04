@@ -1,32 +1,44 @@
 import 'package:flutter/material.dart';
 import 'service_selection_screen.dart';
+import 'profile_screen.dart';
+import 'appointments_screen.dart';
 
-/// Pantalla principal del catálogo de servicios.
-/// Estructura basada en tu mockup HTML,
-/// pero usando diseño Material Design nativo de Flutter.
-class CatalogScreen extends StatelessWidget {
+class CatalogScreen extends StatefulWidget {
   const CatalogScreen({super.key});
 
   @override
+  State<CatalogScreen> createState() => _CatalogScreenState();
+}
+
+class _CatalogScreenState extends State<CatalogScreen> {
+  int _selectedIndex = 1;
+
+  static const List<Widget> _widgetOptions = <Widget>[
+    AppointmentsScreen(),
+    CatalogBody(),
+    ProfileScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Definimos los colores principales del tema
     const Color colorRojo = Color(0xFFE63946);
     const Color colorAzul = Color(0xFF457B9D);
     const Color fondoGris = Color(0xFFF9FAFB);
 
     return Scaffold(
       backgroundColor: fondoGris,
-
-      // ===============================
-      // HEADER CON LOGO Y BOTÓN
-      // ===============================
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 3,
         backgroundColor: Colors.white,
         title: Row(
           children: [
-            // Logo (manteniendo tu estilo)
             Image.asset(
               'assets/images/logo_horizontal.png',
               height: 48,
@@ -42,119 +54,9 @@ class CatalogScreen extends StatelessWidget {
           ),
         ],
       ),
-
-      // ===============================
-      // CONTENIDO PRINCIPAL SCROLLABLE
-      // ===============================
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // -------------------------------
-            // BARRA DE BÚSQUEDA
-            // -------------------------------
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Buscar servicios...',
-                prefixIcon: const Icon(Icons.search),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // -------------------------------
-            // SECCIÓN DE OFERTAS
-            // -------------------------------
-            const Text(
-              'Ofertas y Destacados',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Carrusel horizontal de ofertas
-            SizedBox(
-              height: 180,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: const [
-                  OfertaCard(
-                    titulo: 'Paquete Completo',
-                    descripcion: 'Corte + Afeitado + Manicura (20% OFF)',
-                    imagenUrl:
-                        'https://lh3.googleusercontent.com/aida-public/AB6AXuDNGbUOzJdmumnOgDV1S2wnOQczvUwogUDQ2kkZ7YUaPKjNojD2hGi6bmW8-S8iY8n_ILG4YLyuYImKgzZY3gDfvcZM4tB-g3x_DFdgA5yKdnQhhgg5Iy4Td9dqYfPtBd0lwUz7QhzPtJYLnd-pFuwWhqlAphV5uvd6w2hK2fbLa86GnSDvqbHGJR39xdt05SCdk6hw873nwVqBtF0hCVXU39PPawVJmxr6hsMQ2HX0btxZwCERkV1Zphtq8sJYrTfCW9WD_J5_TKw',
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // -------------------------------
-            // SECCIÓN CATÁLOGO DE SERVICIOS
-            // -------------------------------
-            const Text(
-              'Catálogo de Servicios',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Grid de servicios
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 3 / 4,
-              children: const [
-                ServicioCard(
-                  titulo: 'Corte de cabello',
-                  precio: '\$25',
-                  imagenUrl:
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuAEiDfplfvVytMfZ5YJEdgRE9BlwQCRMzE6p-ooPxcYLlojqP52caHgLmXYnI6rWXUkzs1m6in2ioxn9wrOASFOaF3vGQxMCnot5_wah72n2OK959bw4SHV5rxMeWzg4roKb_qCtYsou-_HM6lvQiKkhg-9-DMcFm3F5MwW1KeoJ28QSrvrYX5r5bF_6Wr6G3_mY4_AVURqvJrdWa7doEi8uZiv_BETMhu7DXnIR3DvY5hmeEUlXUqJs57rMYqzalY34JLtRiy01FE',
-                ),
-                ServicioCard(
-                  titulo: 'Afeitado',
-                  precio: '\$15',
-                  imagenUrl:
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuApUuZArdcvR4Yt7Y4vfTxvmNupeZAZtVTBUUxNTc13yqWjk4_0R445uca9OZmdNAjK16aPc83N-nsfihmAuVh6S1qVammbtpCEbtmcgnVOKQ1BaLQjC_rjt-wXbe28_7RzeFpMx5ePwvjq8_nsVz_7a_5KN-wlepcSVEPnyHtIk2h10_qE7l74KRhngwcrHw9WULZOEdYAvph0bf4xBkfi2pFx54VKGNVSRAhDwP9XZHr46octEK4PPdtBGW-qbIRRuRIDb3JQCQ4',
-                ),
-                ServicioCard(
-                  titulo: 'Manicura',
-                  precio: '\$30',
-                  imagenUrl:
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuCv9xuVzD0nxWmKOj0UmfybKbDWiNnQKNHfy67_e9ip5090dCpAsS-NZ9ihKSwwRslcGQWzP5tcdE5qQKvrXSgYWz6bh9mQhb6FAm9GWrzSvjHhyssUODVc_Az-DCndSx1YLM8Nv3t8PNf5fkxxIykcegnvwr719WrWaDq03Y-6kJ4guuPmIUYbJbBe1f04tSzo3cKgE0f-2yv9R3hMP--YbnierElp7x7qQk0NmTJ5zRyHKJw3fhQIBeoOrp1cXyeir0elz2111ow',
-                ),
-                ServicioCard(
-                  titulo: 'Maquillaje',
-                  precio: '\$40',
-                  imagenUrl:
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuApcNIweVr9rG2zwknjp5y3ovSAgdJV6QqoxtZ_3NwETg_3cx_26KFH2SODJrPuNsqWBaHDymnCI9ZOS3s2Lp0YAgXItemXm1DLvETbSLqi5OOQAtC7AgmMw0imOTvAH3Htf2H0MCJpsCK7rQEaOKQZVE1gspr-8ldjq-We-ejVjV9m9aFv0s9JdWLxt9UKZC_ytdF8wygQNwswfJLI6lxZVjPVqBO7N6yGtDaZ4s4rUWu03OzoYtsMwXgQ4M4dU5HdNwyVEd-pGtw',
-                ),
-              ],
-            ),
-          ],
-        ),
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
       ),
-
-      // ===============================
-      // FOOTER FIJO DE NAVEGACIÓN
-      // ===============================
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: colorRojo,
         unselectedItemColor: colorAzul,
@@ -165,22 +67,118 @@ class CatalogScreen extends StatelessWidget {
             icon: Icon(Icons.calendar_month),
             label: 'Citas',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.cut), label: 'Servicios'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.cut),
+            label: 'Servicios'
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
             label: 'Perfil',
           ),
         ],
-        currentIndex: 1, // "Servicios" activo
-        onTap: (index) {},
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
 }
 
-/// ===============================
-/// WIDGETS REUTILIZABLES
-/// ===============================
+class CatalogBody extends StatelessWidget {
+  const CatalogBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            decoration: InputDecoration(
+              hintText: 'Buscar servicios...',
+              prefixIcon: const Icon(Icons.search),
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'Ofertas y Destacados',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 180,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: const [
+                OfertaCard(
+                  titulo: 'Paquete Completo',
+                  descripcion: 'Corte + Afeitado + Manicura (20% OFF)',
+                  imagenUrl:
+                      'https://lh3.googleusercontent.com/aida-public/AB6AXuDNGbUOzJdmumnOgDV1S2wnOQczvUwogUDQ2kkZ7YUaPKjNojD2hGi6bmW8-S8iY8n_ILG4YLyuYImKgzZY3gDfvcZM4tB-g3x_DFdgA5yKdnQhhgg5Iy4Td9dqYfPtBd0lwUz7QhzPtJYLnd-pFuwWhqlAphV5uvd6w2hK2fbLa86GnSDvqbHGJR39xdt05SCdk6hw873nwVqBtF0hCVXU39PPawVJmxr6hsMQ2HX0btxZwCERkV1Zphtq8sJYrTfCW9WD_J5_TKw',
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'Catálogo de Servicios',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 12),
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 3 / 4,
+            children: const [
+              ServicioCard(
+                titulo: 'Corte de cabello',
+                precio: '\$25',
+                imagenUrl:
+                    'https://lh3.googleusercontent.com/aida-public/AB6AXuAEiDfplfvVytMfZ5YJEdgRE9BlwQCRMzE6p-ooPxcYLlojqP52caHgLmXYnI6rWXUkzs1m6in2ioxn9wrOASFOaF3vGQxMCnot5_wah72n2OK959bw4SHV5rxMeWzg4roKb_qCtYsou-_HM6lvQiKkhg-9-DMcFm3F5MwW1KeoJ28QSrvrYX5r5bF_6Wr6G3_mY4_AVURqvJrdWa7doEi8uZiv_BETMhu7DXnIR3DvY5hmeEUlXUqJs57rMYqzalY34JLtRiy01FE',
+              ),
+              ServicioCard(
+                titulo: 'Afeitado',
+                precio: '\$15',
+                imagenUrl:
+                    'https://lh3.googleusercontent.com/aida-public/AB6AXuApUuZArdcvR4Yt7Y4vfTxvmNupeZAZtVTBUUxNTc13yqWjk4_0R445uca9OZmdNAjK16aPc83N-nsfihmAuVh6S1qVammbtpCEbtmcgnVOKQ1BaLQjC_rjt-wXbe28_7RzeFpMx5ePwvjq8_nsVz_7a_5KN-wlepcSVEPnyHtIk2h10_qE7l74KRhngwcrHw9WULZOEdYAvph0bf4xBkfi2pFx54VKGNVSRAhDwP9XZHr46octEK4PPdtBGW-qbIRRuRIDb3JQCQ4',
+              ),
+              ServicioCard(
+                titulo: 'Manicura',
+                precio: '\$30',
+                imagenUrl:
+                    'https://lh3.googleusercontent.com/aida-public/AB6AXuCv9xuVzD0nxWmKOj0UmfybKbDWiNnQKNHfy67_e9ip5090dCpAsS-NZ9ihKSwwRslcGQWzP5tcdE5qQKvrXSgYWz6bh9mQhb6FAm9GWrzSvjHhyssUODVc_Az-DCndSx1YLM8Nv3t8PNf5fkxxIykcegnvwr719WrWaDq03Y-6kJ4guuPmIUYbJbBe1f04tSzo3cKgE0f-2yv9R3hMP--YbnierElp7x7qQk0NmTJ5zRyHKJw3fhQIBeoOrp1cXyeir0elz2111ow',
+              ),
+              ServicioCard(
+                titulo: 'Maquillaje',
+                precio: '\$40',
+                imagenUrl:
+                    'https://lh3.googleusercontent.com/aida-public/AB6AXuApcNIweVr9rG2zwknjp5y3ovSAgdJV6QqoxtZ_3NwETg_3cx_26KFH2SODJrPuNsqWBaHDymnCI9ZOS3s2Lp0YAgXItemXm1DLvETbSLqi5OOQAtC7AgmMw0imOTvAH3Htf2H0MCJpsCK7rQEaOKQZVE1gspr-8ldjq-We-ejVjV9m9aFv0s9JdWLxt9UKZC_ytdF8wygQNwswfJLI6lxZVjPVqBO7N6yGtDaZ4s4rUWu03OzoYtsMwXgQ4M4dU5HdNwyVEd-pGtw',
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class OfertaCard extends StatelessWidget {
   final String titulo;
@@ -252,11 +250,10 @@ class ServicioCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      // Aquí en el futuro podrás navegar a service_selection_screen.dart
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => SeleccionServicioScreen()),
+          MaterialPageRoute(builder: (_) => const SeleccionServicioScreen()),
         );
       },
       child: Card(
