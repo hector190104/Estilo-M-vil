@@ -1,51 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'date_selection_screen.dart';
-
-// --- MODIFICACIÓN: Paleta de colores extraída de tu HTML/Tailwind ---
-class AppColors {
-  // Paleta Primaria (Rojos)
-  static const Color primary50 = Color(0xFFFEF2F2);
-  static const Color primary100 = Color(0xFFFEE2E2);
-  static const Color primary200 = Color(0xFFFECACA);
-  static const Color primary500 = Color(0xFFEF4444);
-  static const Color primary700 = Color(0xFFB91C1C);
-  static const Color primary800 = Color(0xFF991B1B);
-
-  // Paleta Secundaria (Azules - para selección)
-  static const Color secondary50 = Color(0xFFEFF6FF);
-  static const Color secondary500 = Color(0xFF3B82F6);
-
-  // Paleta Progreso
-  static const Color progressStep1 = Color(0xFF457B9D);
-  static const Color progressActive = Color(
-    0xFFE63946,
-  ); // También es el color del botón
-
-  // Paleta Neutrales (Grises)
-  static const Color gray100 = Color(0xFFF3F4F6);
-  static const Color gray200 = Color(0xFFE5E7EB);
-  static const Color gray300 = Color(0xFFD1D5DB);
-  static const Color gray400 = Color(0xFF9CA3AF);
-  static const Color gray500 = Color(0xFF6B7280);
-  static const Color gray600 = Color(0xFF4B5563);
-  static const Color gray700 = Color(0xFF374151);
-  static const Color gray900 = Color(0xFF11182C);
-
-  // Paleta Semántica (Status)
-  static const Color green500 = Color(0xFF22C55E);
-  static const Color green700 = Color(0xFF059669);
-  static const Color yellow500 = Color(0xFFEAB308);
-  static const Color yellow700 = Color(0xFFB45309);
-  static const Color red500 = Color(0xFFEF4444);
-  static const Color red700 = Color(0xFFB91C1C);
-  static const Color yellowStar = Color(
-    0xFFEAB308,
-  ); // text-yellow-500 para estrellas
-}
-// --- FIN MODIFICACIÓN ---
-
-// --- MODIFICACIÓN: Modelo de Employee actualizado para coincidir con el mockup ---
+import 'app_colors.dart';
 class Employee {
   final String name;
   final double rating;
@@ -501,7 +457,7 @@ class _EmployeeSelectionScreenState extends State<EmployeeSelectionScreen> {
     const String stepName = 'Selección de estilista';
 
     List<Color> colors = [
-      AppColors.progressStep1, // Paso 1 (completado)
+      AppColors.progressStep, // Paso 1 (completado)
       AppColors.progressActive, // Paso 2 (activo)
       AppColors.gray300, // Paso 3 (inactivo)
       AppColors.gray300, // Paso 4 (inactivo)
@@ -533,7 +489,7 @@ class _EmployeeSelectionScreenState extends State<EmployeeSelectionScreen> {
             style: const TextStyle(
               fontWeight: FontWeight.bold, // font-bold
               fontSize: 14, // text-sm
-              color: AppColors.progressStep1, // text-[#457B9D]
+              color: AppColors.progressStep, // text-[#457B9D]
             ),
             children: const [
               TextSpan(

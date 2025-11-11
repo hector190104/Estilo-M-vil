@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'service_selection_screen.dart';
 import 'profile_screen.dart';
 import 'appointments_screen.dart';
+import 'app_colors.dart';
 
 class CatalogScreen extends StatefulWidget {
   const CatalogScreen({super.key});
@@ -27,12 +28,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const Color colorRojo = Color(0xFFE63946);
-    const Color colorAzul = Color(0xFF457B9D);
-    const Color fondoGris = Color(0xFFF9FAFB);
-
     return Scaffold(
-      backgroundColor: fondoGris,
+      backgroundColor: AppColors.gray50,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 3,
@@ -58,8 +55,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: colorRojo,
-        unselectedItemColor: colorAzul,
+        selectedItemColor: AppColors.progressActive,
+        unselectedItemColor: AppColors.progressStep,
         backgroundColor: Colors.white,
         elevation: 8,
         items: const [
