@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'register_screen.dart';
 import 'login_screen.dart';
+import 'app_colors.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -29,7 +30,7 @@ class HomeScreen extends StatelessWidget {
                       'Belleza y barbería a domicilio.',
                       style: TextStyle(
                         fontSize: 18,
-                        color: const Color.fromARGB(255, 0, 0, 0),
+                        color: AppColors.foregroundColor,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -58,7 +59,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFE63946), // rojo
+                        backgroundColor: AppColors.progressActive,
                         minimumSize: Size(double.infinity, 60),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -100,7 +101,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF457B9D), // azul
+                        backgroundColor: AppColors.progressStep,
                         minimumSize: Size(double.infinity, 60),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
