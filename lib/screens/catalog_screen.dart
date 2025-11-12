@@ -3,6 +3,9 @@ import 'service_selection_screen.dart';
 import 'profile_screen.dart';
 import 'appointments_screen.dart';
 import 'app_colors.dart';
+import 'notifications_screen.dart';
+import 'help_screen.dart';
+import 'settings_screen.dart';
 
 class CatalogScreen extends StatefulWidget {
   const CatalogScreen({super.key});
@@ -30,8 +33,9 @@ class _CatalogScreenState extends State<CatalogScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.gray50,
+      // Drawer eliminado para seguir el diseño de los nuevos mockups
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         elevation: 3,
         backgroundColor: Colors.white,
         title: Row(
@@ -46,8 +50,18 @@ class _CatalogScreenState extends State<CatalogScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.tune, color: Colors.black54),
-            onPressed: () {},
+            icon: const Icon(Icons.notifications_none, color: AppColors.gray700),
+            tooltip: 'Notificaciones',
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen()));
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings, color: AppColors.gray700),
+            tooltip: 'Configuración',
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
+            },
           ),
         ],
       ),

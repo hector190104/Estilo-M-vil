@@ -8,6 +8,8 @@ import 'screens/catalog_screen.dart';
 import 'screens/service_selection_screen.dart';
 import 'screens/employee_selection_screen.dart';
 import 'screens/date_selection_screen.dart';
+import 'screens/notifications_screen.dart';
+import 'screens/help_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +42,8 @@ class MyApp extends StatelessWidget {
         '/service_selection': (context) => SeleccionServicioScreen(),
         '/employee_selection': (context) => const EmployeeSelectionScreen(),
         '/date_selection': (context) => const DateSelectionScreen(),
+        '/notifications': (context) => const NotificationsScreen(),
+        '/help': (context) => const HelpScreen(),
       },
     );
   }
