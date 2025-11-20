@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/verification_screen.dart';
+import 'package:provider/provider.dart';
+import '../app_state.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -100,10 +102,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
     if (_formKey.currentState?.validate() ?? false) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => VerificationScreen()),
+      final appState = Provider.of<AppState>(context, listen: false);
+      final success = appState.register(
+        _nameController.text.trim(),
+        _phoneController.text.trim(),
+        _passwordController.text,
       );
+      if (success) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => VerificationScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('El número ya está registrado'), backgroundColor: Colors.red),
+        );
+      }
     }
   }
 

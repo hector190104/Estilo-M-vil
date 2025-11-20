@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart'; // Asegúrate de tener tus colores aquí
+import 'app_colors.dart';
+import 'package:provider/provider.dart';
+import '../app_state.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Mapeo de colores del mockup a tu AppColors
-    const Color textColor = AppColors.foregroundColor; // zinc-900
-    const Color mutedColor = AppColors.gray500; // zinc-500
-    const Color cardBgColor = AppColors.gray50; // zinc-50
-    const Color borderColor = AppColors.gray200; // zinc-200
-    const Color buttonColor = AppColors.progressActive; // #E63946
+    final appState = Provider.of<AppState>(context);
+    final user = appState.currentUser;
+    const Color textColor = AppColors.foregroundColor;
+    const Color mutedColor = AppColors.gray500;
+    const Color cardBgColor = AppColors.gray50;
+    const Color borderColor = AppColors.gray200;
+    const Color buttonColor = AppColors.progressActive;
+
+    if (user == null) {
+      // Si no hay usuario, redirige a login
+      Future.microtask(() => Navigator.of(context).pushReplacementNamed('/login'));
+      return const SizedBox.shrink();
+    }
 
     return SingleChildScrollView(
       child: Column(
@@ -75,10 +84,10 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16), // mt-4
-                const Text(
-                  'Sophia Clark',
-                  style: TextStyle(
-                    fontSize: 24, // text-2xl
+                Text(
+                  user.name,
+                  style: const TextStyle(
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: textColor,
                   ),
@@ -97,7 +106,7 @@ class ProfileScreen extends StatelessWidget {
                 const Text(
                   'Información personal',
                   style: TextStyle(
-                    fontSize: 18, // text-lg
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: textColor,
                   ),
@@ -105,7 +114,7 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 16), // py-4 (dividido)
                 _buildInfoRow(
                   label: 'Nombre',
-                  value: 'Sophia Clark',
+                  value: user.name,
                   bgColor: cardBgColor,
                   borderColor: borderColor,
                   textColor: textColor,
@@ -123,7 +132,7 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 8), // space-y-2
                 _buildInfoRow(
                   label: 'Teléfono',
-                  value: '+1 (555) 123-4567',
+                  value: user.phone,
                   bgColor: cardBgColor,
                   borderColor: borderColor,
                   textColor: textColor,
@@ -169,20 +178,21 @@ class ProfileScreen extends StatelessWidget {
                 // --- Botón Cerrar Sesión ---
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonColor, // bg-[#E63946]
+                    backgroundColor: buttonColor,
                     foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 48), // w-full py-3
+                    minimumSize: const Size(double.infinity, 48),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8), // rounded-lg
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     textStyle: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w600, // font-semibold
+                      fontWeight: FontWeight.w600,
                       fontFamily: 'Manrope',
                     ),
                   ),
                   onPressed: () {
-                    // TODO: Implementar lógica de cerrar sesión
+                    Provider.of<AppState>(context, listen: false).logout();
+                    Navigator.of(context).pushReplacementNamed('/login');
                   },
                   child: const Text('Cerrar sesión'),
                 ),

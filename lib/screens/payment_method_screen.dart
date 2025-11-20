@@ -1,34 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'app_colors.dart'; // Importar la paleta de colores central
 import 'string_extensions.dart'; // Importar extensión capitalize
 import 'confirmation_screen.dart'; // Importar la pantalla de confirmación final
+import '../app_state.dart';
 
 // Enum para representar los métodos de pago
 enum PaymentMethod { online, inPerson }
 
 class PaymentMethodScreen extends StatefulWidget {
-  // Datos necesarios para el resumen
-  final DateTime selectedDate;
-  final String selectedTime;
-  final String serviceName;
-  final String employeeName; // Asumiendo que también necesitas el nombre del empleado
-  final double price;
-
-  const PaymentMethodScreen({
-    super.key,
-    required this.selectedDate,
-    required this.selectedTime,
-    required this.serviceName,
-    required this.employeeName, // Añadido
-    required this.price,
-  });
+  const PaymentMethodScreen({super.key});
 
   @override
   State<PaymentMethodScreen> createState() => _PaymentMethodScreenState();
 }
 
 class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
+  DateTime? selectedDate;
+  String? selectedTime;
+  String? serviceName;
+  String? employeeName;
+  double? price;
   // Estado para guardar el método de pago seleccionado
   PaymentMethod _selectedPaymentMethod = PaymentMethod.online; // Online por defecto
 
@@ -36,6 +29,27 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
+    selectedDate = appState.tempSelectedDate;
+    selectedTime = appState.tempSelectedTime;
+    serviceName = appState.tempServiceName;
+    employeeName = appState.tempEmployeeName;
+    price = appState.tempPrice;
+
+    // Guard: Si falta algún dato, redirige al usuario a la pantalla de inicio o muestra un error
+    if (selectedDate == null || selectedTime == null || serviceName == null || employeeName == null || price == null) {
+      // Puedes cambiar la ruta a donde quieras redirigir
+      Future.microtask(() {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Completa todos los pasos antes de seleccionar el método de pago.')),
+        );
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      });
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    // Ya validado, podemos usar !
     return Scaffold(
       backgroundColor: Colors.white, // var(--background-color)
       appBar: _buildAppBar(),
@@ -156,8 +170,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   Widget _buildSummaryCard() {
     // Formatear fecha y precio
     final String formattedDate =
-        DateFormat('EEEE, d \'de\' MMMM', 'es').format(widget.selectedDate).capitalize();
-    final String formattedPrice = NumberFormat.currency(locale: 'es_MX', symbol: '\$').format(widget.price); // Asume MXN
+      DateFormat('EEEE, d \'de\' MMMM', 'es').format(selectedDate!).capitalize();
+    final String formattedPrice = NumberFormat.currency(locale: 'es_MX', symbol: '\$').format(price); // Asume MXN
 
     return Container(
       padding: const EdgeInsets.all(16), // p-4
@@ -178,13 +192,13 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             ),
           ),
           const SizedBox(height: 12), // mb-3
-          _buildSummaryRow("Servicio:", widget.serviceName),
+          _buildSummaryRow("Servicio:", serviceName!),
           const SizedBox(height: 8), // space-y-2
-          _buildSummaryRow("Estilista:", widget.employeeName), // Añadido
+          _buildSummaryRow("Estilista:", employeeName!), // Añadido
           const SizedBox(height: 8), // space-y-2
           _buildSummaryRow("Fecha:", formattedDate),
           const SizedBox(height: 8), // space-y-2
-          _buildSummaryRow("Hora:", widget.selectedTime),
+          _buildSummaryRow("Hora:", selectedTime!),
           const SizedBox(height: 12), // mt-3
           const Divider(color: AppColors.gray200, thickness: 1), // border-t
           const SizedBox(height: 12), // pt-3
@@ -203,7 +217,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 formattedPrice,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18, // text-lg
+                  fontSize: 16, // text-base
                   color: AppColors.progressActive, // var(--primary-color)
                 ),
               ),
@@ -361,35 +375,12 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         ),
         child: ElevatedButton(
           onPressed: isEnabled ? () {
-             // TODO: Implementar lógica de confirmación y pago
-             // - Si es pago en línea, navegar a pantalla de pasarela de pago
-             // - Si es pago en persona, marcar reserva como confirmada y navegar a pantalla de éxito/resumen final
-            //  print("Confirmar Cita:");
-            //  print("  Fecha: ${widget.selectedDate}");
-            //  print("  Hora: ${widget.selectedTime}");
-            //  print("  Servicio: ${widget.serviceName}");
-            //  print("  Estilista: ${widget.employeeName}");
-            //  print("  Precio: ${widget.price}");
-            //  print("  Método Pago: $_selectedPaymentMethod");
-
-             // Ejemplo de navegación a una pantalla de éxito (debes crearla)
-             // Navigator.pushReplacementNamed(context, '/booking_success');
-             Navigator.push( // Usamos push para ir a la confirmación final
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ConfirmationScreen(
-                        // Pasar todos los datos necesarios
-                        selectedDate: widget.selectedDate,
-                        selectedTime: widget.selectedTime,
-                        serviceName: widget.serviceName,
-                        employeeName: widget.employeeName,
-                        price: widget.price,
-                        // Podrías pasar el método de pago también si es relevante
-                        // selectedPaymentMethod: _selectedPaymentMethod,
-                      ),
-                    ),
-                  );
-
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ConfirmationScreen(),
+              ),
+            );
           } : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.progressActive, // bg-[var(--primary-color)]

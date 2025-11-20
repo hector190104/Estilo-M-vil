@@ -148,7 +148,7 @@ class VerificationScreen extends StatelessWidget {
                                       elevation: 5,
                                     ),
                                     onPressed: () {
-                                      // Acción de verificar
+                                      Navigator.of(context).pushReplacementNamed('/catalog');
                                     },
                                     child: Text(
                                       'Verificar',
@@ -201,14 +201,7 @@ class VerificationScreen extends StatelessWidget {
                                             elevation: 0,
                                           ),
                                           onPressed: () {
-                                            // Acción de reenviar código
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    CatalogScreen(),
-                                              ),
-                                            );
+                                            Navigator.of(context).pushReplacementNamed('/catalog');
                                           },
                                           child: Text(
                                             'Reenviar código',

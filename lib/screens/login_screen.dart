@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'register_screen.dart';
 import 'catalog_screen.dart';
 import 'app_colors.dart';
+import 'package:provider/provider.dart';
+import '../app_state.dart';
 import 'password_recovery_screen.dart';
 
 // --- SEGURIDAD Y VALIDACIONES ---
@@ -80,10 +82,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() {
     if (_isLockedOut) return;
     if (_formKey.currentState?.validate() ?? false) {
-      // Simulación de login seguro
       String phone = _phoneController.text.replaceAll(RegExp(r'[\s\-\(\)]'), '');
       String password = _passwordController.text;
-      if (phone == '3001234567' && password == 'Password123') {
+      final appState = Provider.of<AppState>(context, listen: false);
+      final success = appState.login(phone, password);
+      if (success) {
         _handleSuccessfulLogin();
         Navigator.pushReplacement(
           context,
@@ -214,18 +217,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       validator: _validatePassword,
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          '¿Olvidaste tu contraseña?',
-                          style: TextStyle(
-                            color: AppColors.secondary500,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Align(
+                    //   alignment: Alignment.centerRight,
+                    //   child: TextButton(
+                    //     onPressed: () {},
+                    //     child: Text(
+                    //       '¿Olvidaste tu contraseña?',
+                    //       style: TextStyle(
+                    //         color: AppColors.secondary500,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     if (_failedAttempts > 0 && !_isLockedOut)
                       Padding(
                         padding: const EdgeInsets.only(top: 8),

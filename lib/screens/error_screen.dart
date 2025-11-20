@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
+// ...existing code...
 
 class ErrorScreen extends StatelessWidget {
   final String? message;

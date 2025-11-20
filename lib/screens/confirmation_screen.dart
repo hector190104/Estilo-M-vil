@@ -1,30 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../app_state.dart';
 import 'package:intl/intl.dart';
 import 'app_colors.dart';
 import 'string_extensions.dart';
 
 class ConfirmationScreen extends StatelessWidget {
-  final DateTime selectedDate;
-  final String selectedTime;
-  final String serviceName;
-  final String employeeName;
-  final double price;
-
   static const String _employeeImageUrl =
       'https://lh3.googleusercontent.com/aida-public/AB6AXuBe5XoKhLs5fPu99T01f-JuK6yv94Q1SbpwXhh2Z88wl8_P9D9MY0FB5sU470msyTLtIF881s5-Gpi2g77GHVdWUIf_lMScXx6nWOr0SN5-cIYh440j77pqTReDJd1k1e4Jbx8Za66AfNymxUreNTpCGXvS28d3OLQe7XAx_GStyccZ5bAP7O7HaHCwqdJORteALZZn2ZWwqhjL8TwFuNvu-JsOrZBmSeI1RQkFjiZoSa0KanyDHpheuwx_Ys7WWHOedZrcibPeOUI';
 
-  const ConfirmationScreen({
-    super.key,
-    required this.selectedDate,
-    required this.selectedTime,
-    required this.serviceName,
-    required this.employeeName,
-    required this.price,
-  });
+  const ConfirmationScreen({super.key});
+
+  void _addAppointmentAndGoHome(BuildContext context) {
+    final appState = Provider.of<AppState>(context, listen: false);
+    final selectedDate = appState.tempSelectedDate!;
+    final selectedTime = appState.tempSelectedTime!;
+    final serviceName = appState.tempServiceName!;
+    final employeeName = appState.tempEmployeeName!;
+    final employeeAvatarUrl = appState.tempEmployeeAvatarUrl;
+    final price = appState.tempPrice!;
+    appState.addAppointment(
+      AppAppointment(
+        service: serviceName,
+        date: "${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year} - $selectedTime",
+        employee: employeeName,
+        status: 'Confirmada',
+        icon: Icons.content_cut,
+        color: AppColors.progressStep,
+        employeeAvatarUrl: employeeAvatarUrl,
+      ),
+    );
+    appState.clearTempAppointment();
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).pushReplacementNamed('/catalog');
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Esta es la estructura que te funcionó
+    final appState = Provider.of<AppState>(context);
+    final selectedDate = appState.tempSelectedDate!;
+    final selectedTime = appState.tempSelectedTime!;
+    final serviceName = appState.tempServiceName!;
+    final employeeName = appState.tempEmployeeName!;
+    final price = appState.tempPrice!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(context),
@@ -42,7 +60,7 @@ class ConfirmationScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   _buildConfirmationHeader(),
                   const SizedBox(height: 24),
-                  _buildDetailsCard(),
+                  _buildDetailsCard(context),
                   const SizedBox(height: 80),
                 ],
               ),
@@ -162,71 +180,44 @@ class ConfirmationScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailsCard() {
-    final String formattedDate =
-        DateFormat('d \'de\' MMMM', 'es').format(selectedDate).capitalize();
+  Widget _buildDetailsCard(BuildContext context) {
+    final appState = Provider.of<AppState>(context, listen: false);
+    final employeeName = appState.tempEmployeeName!;
+    final price = appState.tempPrice!;
     final String formattedPrice =
-        NumberFormat.currency(locale: 'es_MX', symbol: '\$').format(price);
+      NumberFormat.currency(locale: 'es_MX', symbol: '\$').format(price);
 
-    // Corregir el color con opacidad
-    final Color cardColor = Color.fromRGBO(
-      AppColors.gray100.red,
-      AppColors.gray100.green,
-      AppColors.gray100.blue,
-      0.5, // 50% opacidad
-    );
-
-    return Card(
-      color: cardColor,
-      elevation: 3,
-      shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
+    return Column(
+      children: [
+        const SizedBox(height: 16),
+        _buildDetailRow(
+          imageUrl: _employeeImageUrl,
+          label: 'Estilista',
+          value: employeeName,
+        ),
+        const Divider(height: 32, color: AppColors.gray200),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildDetailRow(
-              icon: Icons.content_cut,
-              label: 'Servicio',
-              value: serviceName,
+            const Text(
+              'Costo estimado',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.foregroundColor,
+              ),
             ),
-            const SizedBox(height: 16),
-            _buildDetailRow(
-              icon: Icons.calendar_today,
-              label: 'Fecha y Hora',
-              value: "$formattedDate - $selectedTime",
-            ),
-            const SizedBox(height: 16),
-            _buildDetailRow(
-              imageUrl: _employeeImageUrl,
-              label: 'Estilista',
-              value: employeeName,
-            ),
-            const Divider(height: 32, color: AppColors.gray200),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Costo estimado',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.foregroundColor,
-                  ),
-                ),
-                Text(
-                  formattedPrice,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.progressActive,
-                  ),
-                ),
-              ],
+            Text(
+              formattedPrice,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.progressActive,
+              ),
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 
@@ -301,12 +292,9 @@ class ConfirmationScreen extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 500),
           child: ElevatedButton(
-            // --- MODIFICACIÓN: Llamar al diálogo ---
             onPressed: () {
-              // Ya no usamos SnackBar, llamamos a nuestra función de diálogo
               _showConfirmationDialog(context);
             },
-            // --- FIN MODIFICACIÓN ---
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.progressActive,
               foregroundColor: Colors.white,
@@ -329,30 +317,32 @@ class ConfirmationScreen extends StatelessWidget {
 
   // --- WIDGET NUEVO: Diálogo de Confirmación ---
   void _showConfirmationDialog(BuildContext context) {
-    // Formatear los datos para el diálogo
+    final appState = Provider.of<AppState>(context, listen: false);
+    final selectedDate = appState.tempSelectedDate!;
+    final selectedTime = appState.tempSelectedTime!;
+    final serviceName = appState.tempServiceName!;
+    final employeeName = appState.tempEmployeeName!;
+    final price = appState.tempPrice!;
     final String formattedDate =
-        DateFormat('EEEE, d \'de\' MMMM', 'es').format(selectedDate).capitalize();
+      DateFormat('EEEE, d \'de\' MMMM', 'es').format(selectedDate).capitalize();
     final String formattedPrice =
-        NumberFormat.currency(locale: 'es_MX', symbol: '\$').format(price);
+      NumberFormat.currency(locale: 'es_MX', symbol: '\$').format(price);
 
     showDialog(
       context: context,
-      // El fondo oscuro semitransparente (bg-gray-900/50)
       barrierColor: Colors.black.withOpacity(0.5),
       builder: (BuildContext dialogContext) {
-        // Usamos Dialog para la ventana emergente
         return Dialog(
           backgroundColor: Colors.white,
-          elevation: 8.0, // shadow-lg
+          elevation: 8.0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0), // rounded-xl
+            borderRadius: BorderRadius.circular(12.0),
           ),
-          // Quitar el padding por defecto del Dialog
           insetPadding: const EdgeInsets.all(24),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 384), // max-w-sm
+            constraints: const BoxConstraints(maxWidth: 384),
             child: Column(
-              mainAxisSize: MainAxisSize.min, // Para que se ajuste al contenido
+              mainAxisSize: MainAxisSize.min,
               children: [
                 // --- Contenido Principal del Diálogo ---
                 Padding(
@@ -478,13 +468,26 @@ class ConfirmationScreen extends StatelessWidget {
                       // Botón Cerrar (X)
                       InkWell(
                         onTap: () {
-                          // Cierra solo el diálogo
+                          final appState = Provider.of<AppState>(context, listen: false);
+                          final selectedDate = appState.tempSelectedDate!;
+                          final selectedTime = appState.tempSelectedTime!;
+                          final serviceName = appState.tempServiceName!;
+                          final employeeName = appState.tempEmployeeName!;
+                          final employeeAvatarUrl = appState.tempEmployeeAvatarUrl;
+                          appState.addAppointment(
+                            AppAppointment(
+                              service: serviceName,
+                              date: "${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year} - $selectedTime",
+                              employee: employeeName,
+                              status: 'Confirmada',
+                              icon: Icons.content_cut,
+                              color: AppColors.progressStep,
+                              employeeAvatarUrl: employeeAvatarUrl,
+                            ),
+                          );
                           Navigator.of(dialogContext).pop();
-                          // Y luego navega al inicio
-                          Navigator.of(context)
-                              .popUntil((route) => route.isFirst);
-                          // NAVEGA A CATALOGO
-                          Navigator.of(context).pushNamed('/catalog');
+                          Navigator.of(context).popUntil((route) => route.isFirst);
+                          Navigator.of(context).pushReplacementNamed('/catalog');
                         },
                         customBorder: const CircleBorder(),
                         child: const Padding(
@@ -524,13 +527,26 @@ class ConfirmationScreen extends StatelessWidget {
                             ),
                           ),
                           onPressed: () {
-                            // 1. Cierra el diálogo
+                            final appState = Provider.of<AppState>(context, listen: false);
+                            final selectedDate = appState.tempSelectedDate!;
+                            final selectedTime = appState.tempSelectedTime!;
+                            final serviceName = appState.tempServiceName!;
+                            final employeeName = appState.tempEmployeeName!;
+                            final employeeAvatarUrl = appState.tempEmployeeAvatarUrl;
+                            appState.addAppointment(
+                              AppAppointment(
+                                service: serviceName,
+                                date: "${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year} - $selectedTime",
+                                employee: employeeName,
+                                status: 'Confirmada',
+                                icon: Icons.content_cut,
+                                color: AppColors.progressStep,
+                                employeeAvatarUrl: employeeAvatarUrl,
+                              ),
+                            );
                             Navigator.of(dialogContext).pop();
-                            // 2. Vuelve a la pantalla principal (/home)
-                            Navigator.of(context)
-                                .popUntil((route) => route.isFirst);
-                            // 3. Navega a la pantalla de catálogo
-                            Navigator.of(context).pushNamed('/catalog');
+                            Navigator.of(context).popUntil((route) => route.isFirst);
+                            Navigator.of(context).pushReplacementNamed('/catalog');
                           },
                           child: const Text('Aceptar'), // Nuevo texto
                         ),

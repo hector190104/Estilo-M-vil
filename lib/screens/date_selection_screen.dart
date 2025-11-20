@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'app_colors.dart'; // Importar la paleta de colores central
 import 'time_selection_screen.dart';
 import 'string_extensions.dart';
+import 'package:provider/provider.dart';
+import '../app_state.dart';
 
 // Enum para manejar los estados de disponibilidad del calendario
 enum DayAvailability { available, limited, unavailable, none }
@@ -178,27 +180,29 @@ class _DateSelectionScreenState extends State<DateSelectionScreen> {
   }
 
   Widget _buildStylistCard() {
+    final appState = Provider.of<AppState>(context);
+    final employeeName = appState.tempEmployeeName ?? '';
+    // Puedes agregar lógica para mostrar un avatar diferente según el nombre si lo deseas
     return Container(
-      padding: const EdgeInsets.all(16), // p-4
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.gray50, // bg-gray-50
-        borderRadius: BorderRadius.circular(8), // rounded-lg
+        color: AppColors.gray50,
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
           const CircleAvatar(
-            radius: 32, // w-16 h-16
-            backgroundImage: NetworkImage(
-                'https://lh3.googleusercontent.com/aida-public/AB6AXuDtyiP3o7JyDSo2qyYo4lY3BHmyLuzDg1J2yBqopO7hJ61hq6UJA7t3ytCntU_EQ2nv_QxKSH6uJmhLewx7gnWpLB4g74m_cBuIMDVIF5DhwHrp4mR9JWjI3Uvbhc4kTM9-25q4EHU3z_spaR3JXYoIywXhye4UvAZr_pvp17vlQh-gfpuT9EBh2YdqbdJMeqB1a9BUnv6sN6_Y--2lrilJOHGfrTYgJcT-9qTeDemjpaemdAOoQqds5YqheKKX4gSI2oSOnDi6q3k'),
+            radius: 32,
+            backgroundImage: NetworkImage('https://cdn-icons-png.flaticon.com/512/3135/3135715.png'),
           ),
-          const SizedBox(width: 16), // ml-4
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Carlos Mendoza',
-                  style: TextStyle(
+                Text(
+                  employeeName.isNotEmpty ? employeeName : 'Selecciona un estilista',
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: AppColors.gray800,
                     fontSize: 16,
@@ -207,19 +211,19 @@ class _DateSelectionScreenState extends State<DateSelectionScreen> {
                 const Text(
                   'Barbero Profesional',
                   style: TextStyle(
-                    fontSize: 14, // text-sm
+                    fontSize: 14,
                     color: AppColors.gray600,
                   ),
                 ),
-                const SizedBox(height: 4), // mt-1
+                const SizedBox(height: 4),
                 Row(
-                  children: const [
-                    Icon(Icons.star, color: AppColors.yellowStar, size: 16),
-                    SizedBox(width: 4), // ml-1
+                  children: [
+                    const Icon(Icons.star, color: AppColors.yellowStar, size: 16),
+                    SizedBox(width: 4),
                     Text(
-                      '4.9 (120 reseñas)',
-                      style: TextStyle(
-                        fontSize: 14, // text-sm
+                      employeeName == 'Carlos Mendoza' ? '4.9 (120 reseñas)' : '4.8 (100+ reseñas)',
+                      style: const TextStyle(
+                        fontSize: 14,
                         color: AppColors.gray600,
                       ),
                     ),
@@ -452,64 +456,60 @@ class _DateSelectionScreenState extends State<DateSelectionScreen> {
 
   Widget _buildContinueButton() {
     bool isEnabled = _selectedDay != null;
-
-    // --- MODIFICACIÓN: Aplicar estilo con sombra y tamaño ---
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Container(
         decoration: BoxDecoration(
-          // Sombra extraída de la pantalla de referencia
           boxShadow: [
             BoxShadow(
-              // Usamos el color del botón con opacidad para la sombra
               color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.3),
               spreadRadius: 4,
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),
           ],
-          // El borderRadius es para que la sombra coincida con el botón
-          borderRadius: BorderRadius.circular(12), // rounded-xl (era 12 en el HTML del footer)
+          borderRadius: BorderRadius.circular(12),
         ),
         child: ElevatedButton(
-          onPressed: isEnabled ? () {
-            // Lógica al presionar Continuar
-            // Por ejemplo, navegar a la siguiente pantalla
-            if (_selectedDay != null) {
-              final selectedDate = DateTime(
-                _currentMonth.year,
-                _currentMonth.month,
-                _selectedDay!,
-              );
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TimeSelectionScreen(
-                    selectedDate: selectedDate,
-                  ),
-                ),
-              );
-            }
-          } : null,
+          onPressed: isEnabled
+              ? () {
+                  if (_selectedDay != null) {
+                    final selectedDate = DateTime(
+                      _currentMonth.year,
+                      _currentMonth.month,
+                      _selectedDay!,
+                    );
+                    final appState = Provider.of<AppState>(context, listen: false);
+                    appState.setTempDate(selectedDate);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TimeSelectionScreen(
+                          selectedDate: selectedDate,
+                        ),
+                      ),
+                    );
+                  }
+                }
+              : null,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.progressActive, // bg-[#E63946]
+            backgroundColor: AppColors.progressActive,
             foregroundColor: Colors.white,
             disabledBackgroundColor: AppColors.gray300,
-            minimumSize: const Size(double.infinity, 60), // <-- Altura de 60px
+            minimumSize: const Size(double.infinity, 60),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12), // rounded-xl (era 12 en el HTML del footer)
+              borderRadius: BorderRadius.circular(12),
             ),
-            elevation: 0, // La sombra la maneja el Container exterior
+            elevation: 0,
             textStyle: const TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 18, // <-- Tamaño de fuente 18
-              fontFamily: 'Manrope', // Mantener la fuente
+              fontSize: 18,
+              fontFamily: 'Manrope',
             ),
           ),
           child: const Text('Continuar'),
         ),
       ),
     );
-    // --- FIN MODIFICACIÓN ---
   }
 }

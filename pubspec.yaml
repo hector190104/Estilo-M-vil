@@ -12,6 +12,8 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   intl: ^0.18.0
   ionicons: ^0.2.1
+  provider: ^6.0.5
+  image_picker: ^0.8.7+5
 
 dev_dependencies:
   flutter_test:
@@ -23,3 +25,8 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/logo_horizontal.png
+
+  fonts:
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope-VariableFont_wght.ttf

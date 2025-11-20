@@ -4,7 +4,7 @@ import 'profile_screen.dart';
 import 'appointments_screen.dart';
 import 'app_colors.dart';
 import 'notifications_screen.dart';
-import 'help_screen.dart';
+// ...existing code...
 import 'settings_screen.dart';
 
 class CatalogScreen extends StatefulWidget {
@@ -17,11 +17,19 @@ class CatalogScreen extends StatefulWidget {
 class _CatalogScreenState extends State<CatalogScreen> {
   int _selectedIndex = 1;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    AppointmentsScreen(),
-    CatalogBody(),
-    ProfileScreen(),
-  ];
+
+  Widget _getScreen(int index) {
+    switch (index) {
+      case 0:
+        return const AppointmentsScreen();
+      case 1:
+        return const CatalogBody();
+      case 2:
+        return const ProfileScreen();
+      default:
+        return const CatalogBody();
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -31,10 +39,10 @@ class _CatalogScreenState extends State<CatalogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.gray50,
-      // Drawer eliminado para seguir el diseño de los nuevos mockups
-      appBar: AppBar(
+    // Solo mostrar el AppBar en la pestaña de Catálogo (índice 1)
+    PreferredSizeWidget? appBar;
+    if (_selectedIndex == 1) {
+      appBar = AppBar(
         automaticallyImplyLeading: true,
         elevation: 3,
         backgroundColor: Colors.white,
@@ -64,9 +72,13 @@ class _CatalogScreenState extends State<CatalogScreen> {
             },
           ),
         ],
-      ),
+      );
+    }
+    return Scaffold(
+      backgroundColor: AppColors.gray50,
+      appBar: appBar,
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: _getScreen(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: AppColors.progressActive,

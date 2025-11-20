@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'date_selection_screen.dart';
 import 'app_colors.dart';
+import 'package:provider/provider.dart';
+import '../app_state.dart';
 class Employee {
   final String name;
   final double rating;
@@ -507,23 +509,19 @@ class _EmployeeSelectionScreenState extends State<EmployeeSelectionScreen> {
 
   // --- Tarjeta "Cualquier estilista" actualizada ---
   Widget _buildAnyStylistCard() {
-    // Detectar si esta tarjeta está "seleccionada"
     bool isSelected = selectedIndex == -1;
-
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(
-        color: isSelected
-            ? AppColors.primary100
-            : AppColors.primary50, // bg-primary-50
-        borderRadius: BorderRadius.circular(12), // rounded-xl
+        color: isSelected ? AppColors.primary100 : AppColors.primary50,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.primary500, // border-primary-500
-          width: 2, // border-2
+          color: AppColors.primary500,
+          width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1), // shadow-md aproximado
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 6,
             offset: const Offset(0, 4),
           ),
@@ -531,39 +529,34 @@ class _EmployeeSelectionScreenState extends State<EmployeeSelectionScreen> {
       ),
       child: InkWell(
         onTap: () {
-          // Lógica para seleccionar "cualquier estilista"
           setState(() {
-            selectedIndex = -1; // Usar un índice especial, por ejemplo
+            selectedIndex = -1;
           });
         },
-        borderRadius: BorderRadius.circular(
-          10,
-        ), // Un poco menos que el contenedor
+        borderRadius: BorderRadius.circular(10),
         splashColor: AppColors.primary200,
         child: Padding(
-          padding: const EdgeInsets.all(16.0), // p-4
+          padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              // --- Icono ---
               Container(
-                width: 56, // size-14
-                height: 56, // size-14
+                width: 56,
+                height: 56,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  shape: BoxShape.circle, // rounded-full
+                  shape: BoxShape.circle,
                   border: Border.all(
-                    color: AppColors.primary200, // border-primary-200
-                    width: 2, // border-2
+                    color: AppColors.primary200,
+                    width: 2,
                   ),
                 ),
                 child: const Icon(
-                  Icons.cut, // 'cut'
-                  color: AppColors.primary500, // text-primary-500
-                  size: 28, // style="font-size: 28px;"
+                  Icons.cut,
+                  color: AppColors.primary500,
+                  size: 28,
                 ),
               ),
-              const SizedBox(width: 16), // gap-4
-              // --- Textos ---
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -571,26 +564,24 @@ class _EmployeeSelectionScreenState extends State<EmployeeSelectionScreen> {
                     Text(
                       'Cualquier estilista',
                       style: TextStyle(
-                        color: AppColors.primary800, // text-primary-800
-                        fontWeight: FontWeight.bold, // font-bold
-                        fontSize: 18, // text-lg
+                        color: AppColors.primary800,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
                       ),
                     ),
                     Text(
                       'Déjanos elegir al mejor para ti',
                       style: TextStyle(
-                        color: AppColors.primary700, // text-primary-700
-                        fontSize: 14, // text-sm
+                        color: AppColors.primary700,
+                        fontSize: 14,
                       ),
                     ),
                   ],
                 ),
               ),
               Icon(
-                isSelected
-                    ? Icons.check_circle
-                    : Icons.chevron_right, // 'chevron_right'
-                color: AppColors.primary500, // text-primary-500
+                isSelected ? Icons.check_circle : Icons.chevron_right,
+                color: AppColors.primary500,
               ),
             ],
           ),
@@ -792,41 +783,47 @@ class _EmployeeSelectionScreenState extends State<EmployeeSelectionScreen> {
         padding: const EdgeInsets.all(16),
         child: Container(
           decoration: BoxDecoration(
-            // Sombra extraída de SeleccionServicioScreen
             boxShadow: [
               BoxShadow(
-                // Usamos el color del botón con opacidad para la sombra
                 color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.3),
                 spreadRadius: 4,
                 blurRadius: 12,
                 offset: const Offset(0, 6),
               ),
             ],
-            // El borderRadius es para que la sombra coincida con el botón
             borderRadius: BorderRadius.circular(12),
           ),
           child: ElevatedButton(
-            onPressed: () {
+            onPressed: selectedIndex != null ? () {
+              final appState = Provider.of<AppState>(context, listen: false);
+              if (selectedIndex == -1) {
+                appState.setTempEmployee('Cualquier estilista', '');
+              } else if (selectedIndex! >= 0 && selectedIndex! < employees.length) {
+                final selectedEmployee = employees[selectedIndex!];
+                appState.setTempEmployee(selectedEmployee.name, selectedEmployee.avatarUrl);
+              } else {
+                return;
+              }
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const DateSelectionScreen(),
                 ),
               );
-            },
+            } : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.progressActive, // Color del botón
-              foregroundColor: Colors.white, // Color del texto
+              backgroundColor: AppColors.progressActive,
+              foregroundColor: Colors.white,
               disabledBackgroundColor: AppColors.gray300,
-              minimumSize: const Size(double.infinity, 60), // Altura de 60px
+              minimumSize: const Size(double.infinity, 60),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12), // Borde del botón
+                borderRadius: BorderRadius.circular(12),
               ),
-              elevation: 0, // La sombra la maneja el Container exterior
+              elevation: 0,
               textStyle: const TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 18, // Tamaño de fuente (era 16)
-                fontFamily: 'Manrope', // Mantener la fuente
+                fontSize: 18,
+                fontFamily: 'Manrope',
               ),
             ),
             child: const Text('Continuar'),

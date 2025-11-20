@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import './screens/home_screen.dart'; // Asumiendo que existe
+import 'package:provider/provider.dart';
+import 'app_state.dart';
+import './screens/home_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/verification_screen.dart';
@@ -13,10 +15,14 @@ import 'screens/help_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Locale 'es' es suficiente, o 'es_MX' si necesitas formato específico mexicano
   await initializeDateFormatting('es', null);
 
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AppState(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -26,13 +32,13 @@ class MyApp extends StatelessWidget {
       title: 'Estilo Móvil',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Manrope', // Asegúrate que la fuente esté configurada
+        fontFamily: 'Manrope',
         primaryColor: const Color(0xFF457B9D), // progressStep
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFE63946)), // progressActive como base
         scaffoldBackgroundColor: Colors.white, // Fondo general blanco
       ),
       // --- MODIFICACIÓN: Iniciar directamente en ConfirmationScreen ---
-      initialRoute: '/home', // Comentado temporalmente
+      initialRoute: '/home', 
       routes: {
         '/home': (context) => HomeScreen(), // Mantenemos las rutas originales
         '/register': (context) => RegisterScreen(),

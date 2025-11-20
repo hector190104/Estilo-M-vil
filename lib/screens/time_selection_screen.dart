@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../app_state.dart';
 import 'package:intl/intl.dart';
 import 'app_colors.dart'; // Importar la paleta de colores central
 import 'string_extensions.dart'; // Importar la extensión para capitalizar
@@ -297,40 +299,31 @@ class _TimeSelectionScreenState extends State<TimeSelectionScreen> {
   // Botón Continuar (con sombra)
   Widget _buildContinueButton() {
     bool isEnabled = _selectedTime != null;
-
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Container(
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: AppColors.progressActive.withOpacity(
-                0.3,
-              ), // shadow-red-500/30
-              spreadRadius: 2, // Ajustado para parecerse más
-              blurRadius: 10, // Ajustado para parecerse más
-              offset: const Offset(0, 5), // Ajustado para parecerse más
+              color: AppColors.progressActive.withOpacity(0.3),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: const Offset(0, 5),
             ),
           ],
-          borderRadius: BorderRadius.circular(12), // rounded-xl
+          borderRadius: BorderRadius.circular(12),
         ),
         child: ElevatedButton(
-          // En time_selection_screen.dart -> _buildContinueButton -> onPressed:
           onPressed: isEnabled
               ? () {
+                  final appState = Provider.of<AppState>(context, listen: false);
+                  if (_selectedTime != null) {
+                    appState.setTempTime(_selectedTime!);
+                  }
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => PaymentMethodScreen(
-                        selectedDate: widget.selectedDate,
-                        selectedTime: _selectedTime!,
-                        // --- PASAR ESTOS DATOS ---
-                        serviceName:
-                            "Corte de Cabello", // Ejemplo, debe venir de antes
-                        employeeName:
-                            "Carlos Mendoza", // Ejemplo, debe venir de antes
-                        price: 35.0, // Ejemplo, debe venir de antes
-                      ),
+                      builder: (context) => PaymentMethodScreen(),
                     ),
                   );
                 }
@@ -339,17 +332,14 @@ class _TimeSelectionScreenState extends State<TimeSelectionScreen> {
             backgroundColor: AppColors.progressActive,
             foregroundColor: Colors.white,
             disabledBackgroundColor: AppColors.gray300,
-            minimumSize: const Size(
-              double.infinity,
-              60,
-            ), // Ajustado para altura (py-4)
+            minimumSize: const Size(double.infinity, 60),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12), // rounded-xl
+              borderRadius: BorderRadius.circular(12),
             ),
-            elevation: 0, // La sombra está en el Container
+            elevation: 0,
             textStyle: const TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 16, // text-base
+              fontSize: 16,
               fontFamily: 'Manrope',
             ),
           ),
